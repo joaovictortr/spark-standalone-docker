@@ -1,0 +1,46 @@
+version: "3.8"
+
+networks:
+  spark-cluster:
+    external: true
+    name: spark-cluster
+
+services:
+  spark-master:
+    image: joaovictortr/spark-standalone:latest
+    build:
+      context: .
+      args:
+        SPARK_VERSION: "3.0.0"
+        HADOOP_VERSION: "2.7"
+    container_name: spark-master
+    networks:
+      - spark-cluster
+    environment:
+      SPARK_MASTER_HOST: "spark-master"
+    volumes:
+      - ./spark-data:/data
+      - ./spark-conf:/opt/spark/conf
+    ports:
+      - 8080:8080
+      - 7070:7070
+    command: ["master"]
+
+  spark-worker:
+    image: joaovictortr/spark-standalone:latest
+    build:
+      context: .
+      args:
+        SPARK_VERSION: "3.0.0"
+        HADOOP_VERSION: "2.7"
+    # container_name: spark-worker
+    networks:
+      - spark-cluster
+    volumes:
+      - ./spark-data:/data
+      - ./spark-conf:/opt/spark/conf
+    ports:
+      - 8081:8081
+    command: ["worker", "spark://spark-master:7077"]
+
+  # Notebook server
