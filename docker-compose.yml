@@ -39,8 +39,6 @@ services:
     volumes:
       - ./spark-data:/data
       - ./spark-conf:/opt/spark/conf
-    ports:
-      - 8081:8081
     command: ["worker", "spark://spark-master:7077"]
 
   # Notebook server
