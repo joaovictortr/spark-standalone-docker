@@ -13,31 +13,28 @@ RUN apt-get update \
     && apt-get clean \
     && pip3 install --no-cache --upgrade pip
 
-COPY ./spark-3.0.0-bin-hadoop2.7.tgz /opt/spark-3.0.0-bin-hadoop2.7.tgz
-
 # Get Spark
-# RUN curl --progress --output "/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" \
-#        "https://downloads.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" \
+RUN curl --progress --output "/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" \
+       "https://downloads.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" \
     # Verify checksum for the Spark installation
-#    && curl --progress --output "/opt/KEYS" "https://downloads.apache.org/spark/KEYS" \
-#    && gpg --import "/opt/KEYS" \
-#    && curl --progress --output "/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz.asc" \
-#        "https://downloads.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz.asc" \
-#    && gpg --verify "/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz.asc" \
-#                    "/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" \
-#    && rm "/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz.asc" \
-
-RUN cd /opt \
-    && tar -xf "/opt/spark-3.0.0-bin-hadoop2.7.tgz" \
-    && rm -rf "/opt/spark-3.0.0-bin-hadoop2.7.tgz" \
-    && mv "/opt/spark-3.0.0-bin-hadoop2.7" "/opt/spark"
-
-ADD scripts/spark-init.sh /spark-init.sh
+    && curl --progress --output "/opt/KEYS" "https://downloads.apache.org/spark/KEYS" \
+    && gpg --import "/opt/KEYS" \
+    && curl --progress --output "/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz.asc" \
+        "https://downloads.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz.asc" \
+    && gpg --verify "/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz.asc" \
+                    "/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" \
+    && rm "/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz.asc" \
+    && cd /opt \
+    && tar -xf "/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" \
+    && rm -rf "/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}.tgz" \
+    && mv "/opt/spark-${SPARK_VERSION}-bin-hadoop${HADOOP_VERSION}" "/opt/spark"
 
 RUN mkdir /data
 VOLUME "/data"
 
-EXPOSE 8080/tcp 8081/tcp 7077/tcp 7078/tcp 6066/tcp
+EXPOSE 8080/tcp 8081/tcp 7077/tcp 6066/tcp
+
+ADD scripts/spark-init.sh /spark-init.sh
 
 WORKDIR /opt/spark
 ENTRYPOINT ["/spark-init.sh"]
