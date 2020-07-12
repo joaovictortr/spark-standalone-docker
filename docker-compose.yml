@@ -38,6 +38,8 @@ services:
     volumes:
       - ./spark-data:/data
       - ./spark-conf:/opt/spark/conf
+    depends_on:
+      - spark-master
     command: ["worker", "spark://spark-master:7077"]
 
   spark-shell:
@@ -53,4 +55,6 @@ services:
     volumes:
       - ./spark-data:/data
       - ./spark-conf:/opt/spark/conf
+    depends_on:
+      - spark-master
     command: ["shell", "spark://spark-master:7077"]
