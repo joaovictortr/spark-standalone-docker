@@ -33,7 +33,6 @@ services:
       args:
         SPARK_VERSION: "3.0.0"
         HADOOP_VERSION: "2.7"
-    # container_name: spark-worker
     networks:
       - spark-cluster
     volumes:
@@ -41,4 +40,17 @@ services:
       - ./spark-conf:/opt/spark/conf
     command: ["worker", "spark://spark-master:7077"]
 
-  # Notebook server
+  spark-shell:
+    image: joaovictortr/spark-standalone:latest
+    container_name: spark-shell
+    build:
+      context: .
+      args:
+        SPARK_VERSION: "3.0.0"
+        HADOOP_VERSION: "2.7"
+    networks:
+      - spark-cluster
+    volumes:
+      - ./spark-data:/data
+      - ./spark-conf:/opt/spark/conf
+    command: ["shell", "spark://spark-master:7077"]
